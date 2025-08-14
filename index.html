@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Computational Neuroscience Lab — Public Site</title>
+
+  <style>
+    :root{
+      --bg:#0f172a;--panel:#111827;--text:#e5e7eb;--muted:#94a3b8;--brand:#14b8a6;--brand-2:#22d3ee;--border:#1f2937;--link:#7dd3fc;--shadow:0 10px 30px rgba(0,0,0,.35)
+    }
+    @media (prefers-color-scheme: light){:root{--bg:#f8fafc;--panel:#fff;--text:#0f172a;--muted:#475569;--brand:#0ea5e9;--brand-2:#06b6d4;--border:#e2e8f0;--link:#0369a1;--shadow:0 8px 24px rgba(2,6,23,.08)}}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial; color:var(--text); background:radial-gradient(1200px 800px at 80% -10%, rgba(20,184,166,.18), transparent 40%), radial-gradient(800px 600px at -10% 110%, rgba(34,211,238,.14), transparent 40%), var(--bg)}
+    a{color:var(--link);text-decoration:none} a:hover{text-decoration:underline}
+
+    .layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;background:linear-gradient(180deg, rgba(20,184,166,.08), rgba(34,211,238,.06)), var(--panel);border-right:1px solid var(--border);padding:28px 18px;box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#001016;font-weight:800;box-shadow:0 6px 20px rgba(20,184,166,.35)}
+    .lab-title{font-size:1.05rem;font-weight:800;letter-spacing:.2px}
+    .lab-sub{font-size:.82rem;color:var(--muted);margin-top:-6px}
+
+    nav{margin-top:16px}
+    .nav{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+    .nav a{display:block;padding:10px 12px;border-radius:10px;color:var(--text);border:1px solid transparent;transition:.2s ease}
+    .nav a:hover{background:rgba(20,184,166,.08);border-color:rgba(34,211,238,.25)}
+    .nav a.active{background:rgba(20,184,166,.16);border-color:rgba(34,211,238,.35)}
+
+    .meta{margin-top:22px;font-size:.85rem;color:var(--muted);border-top:1px dashed var(--border);padding-top:12px}
+
+    main{padding:36px 42px}
+    .hero{background:linear-gradient(135deg, rgba(20,184,166,.14), rgba(34,211,238,.10));border:1px solid var(--border);border-radius:18px;padding:28px;margin-bottom:28px;box-shadow:var(--shadow)}
+    .hero h1{margin:0 0 8px;font-size:clamp(1.6rem,2.5vw,2rem)}
+    .hidden{display:none!important}
+
+    section{scroll-margin-top:20px}
+    .section{border:1px solid var(--border);border-radius:16px;padding:22px;background:var(--panel);box-shadow:var(--shadow);margin-bottom:22px}
+    .section h2{margin:0 0 8px;font-size:1.25rem}
+
+    details.collapsible{border:1px solid var(--border);border-radius:12px;margin:12px 0;background:linear-gradient(180deg, rgba(34,211,238,.04), transparent 30%), var(--panel)}
+    details.collapsible>summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;color:var(--text)}
+    details.collapsible>summary::-webkit-details-marker{display:none}
+    details.collapsible>summary::after{content:"▸";font-size:1rem;opacity:.9}
+    details.collapsible[open]>summary::after{content:"▾"}
+
+    footer{color:var(--muted);font-size:.9rem;margin-top:28px}
+
+    .toggle{display:none;position:fixed;top:14px;left:14px;z-index:999}
+    .toggle button{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:10px;padding:10px 12px;box-shadow:var(--shadow)}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.sidebar{position:fixed;left:-100%;top:0;width:78%;max-width:320px;transition:left .25s ease;z-index:998}.sidebar.open{left:0}main{padding:72px 18px 28px}.toggle{display:block}}
+  </style>
+</head>
+<body>
+  <div class="toggle"><button id="menuBtn" aria-label="Menüyü aç/kapat">☰ Menü</button></div>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="logo">CN</div>
+        <div>
+          <div class="lab-title">Computational Neuroscience Lab</div>
+          <div class="lab-sub">Izmir University of Economics</div>
+        </div>
+      </div>
+      <nav>
+        <ul class="nav" id="nav">
+          <li><a href="#home" class="active">Home</a></li>
+          <li><a href="#research">Research</a></li>
+          <li><a href="#people">People</a></li>
+          <li><a href="#publications">Publications</a></li>
+          <li><a href="#teaching">Teaching</a></li>
+          <li><a href="#datasets">Datasets</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="meta">
+        <div><span class="pill">turkuaz theme</span></div>
+        <div style="margin-top:8px">Last updated: <span id="lastUpdated">—</span></div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="hero" id="home">
+        <h1>Welcome to the Computational Neuroscience Lab</h1>
+        <!-- Public site: content intentionally empty. -->
+      </div>
+
+      <section class="section" id="research">
+        <h2>Research</h2>
+      </section>
+
+      <section class="section" id="people">
+        <h2>People</h2>
+      </section>
+
+      <section class="section" id="publications">
+        <h2>Publications</h2>
+        <!-- Empty, only collapsible headings -->
+        <details class="collapsible"><summary>Books</summary></details>
+        <details class="collapsible"><summary>SCI-Indexed International Journal Articles</summary></details>
+        <details class="collapsible"><summary>Conference Papers (Proceedings)</summary></details>
+        <details class="collapsible"><summary>Book Chapters (International/National)</summary></details>
+        <details class="collapsible"><summary>National Peer-Reviewed Journal Articles</summary></details>
+      </section>
+
+      <section class="section" id="teaching">
+        <h2>Teaching</h2>
+      </section>
+
+      <section class="section" id="datasets">
+        <h2>Datasets</h2>
+      </section>
+
+      <section class="section" id="contact">
+        <h2>Contact</h2>
+      </section>
+
+      <footer>
+        © <span id="year"></span> Computational Neuroscience Lab. All rights reserved.
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const menuBtn=document.getElementById('menuBtn');
+    const sidebar=document.getElementById('sidebar');
+    menuBtn?.addEventListener('click',()=>sidebar.classList.toggle('open'));
+
+    const hero=document.getElementById('home');
+    function getAllViews(){return [hero,...Array.from(document.querySelectorAll('main > .section'))]}
+    function showSection(id){getAllViews().forEach(sec=>{if(!sec)return;const on=(id==='home'&&sec===hero)||(sec.id===id);sec.classList.toggle('hidden',!on)});document.querySelectorAll('#nav a').forEach(a=>{const t=a.getAttribute('href')||'';a.classList.toggle('active',t==='#'+id)});if(id)history.replaceState(null,'','#'+id);if(matchMedia('(max-width:980px)').matches)sidebar.classList.remove('open')}
+    document.getElementById('nav').addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;const href=a.getAttribute('href')||'';if(href.startsWith('#')){e.preventDefault();showSection(href.slice(1));}});
+    const initial=location.hash?location.hash.substring(1):'home';showSection(initial);
+    document.getElementById('year').textContent=new Date().getFullYear();
+    document.getElementById('lastUpdated').textContent=new Date().toLocaleDateString();
+  </script>
+</body>
+</html>
