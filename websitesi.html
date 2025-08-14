@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Computational Neuroscience Lab</title>
+
+  <!-- ==========================
+       GLOBAL STYLES & THEME
+       - Renk değişkenleri
+       - Işık/Koyu mod ayarları
+       - Genel tipografi ve arkaplan
+       ========================== -->
+  <style>
+    /* ====== Theme (Dark default) ====== */
+    :root {
+      --bg: #0f172a;          /* slate-900 */
+      --panel: #111827;       /* gray-900 */
+      --text: #e5e7eb;        /* gray-200 */
+      --muted: #94a3b8;       /* slate-400 */
+      --brand: #14b8a6;       /* teal-500 */
+      --brand-2: #22d3ee;     /* cyan-400 (turkuaz tınısı) */
+      --border: #1f2937;      /* gray-800 */
+      --link: #7dd3fc;        /* sky-300 */
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    /* ====== Theme (Light override) ====== */
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;        /* slate-50 */
+        --panel: #ffffff;      /* white */
+        --text: #0f172a;       /* slate-900 */
+        --muted: #475569;      /* slate-600 */
+        --brand: #0ea5e9;      /* sky-500 */
+        --brand-2: #06b6d4;    /* cyan-500 (turkuaz) */
+        --border: #e2e8f0;     /* slate-200 */
+        --link: #0369a1;       /* sky-800 */
+        --shadow: 0 8px 24px rgba(2, 6, 23, .08);
+      }
+    }
+
+    /* ====== Base ====== */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 80% -10%, rgba(20,184,166,.18), transparent 40%) ,
+                  radial-gradient(800px 600px at -10% 110%, rgba(34,211,238,.14), transparent 40%),
+                  var(--bg);
+    }
+
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ==========================
+       LAYOUT
+       - Grid iskeleti (sidebar + içerik)
+       ========================== */
+    .layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+    /* ==========================
+       SIDEBAR
+       - Marka alanı (logo + başlık)
+       - Navigasyon menüsü
+       - Meta alanı
+       ========================== */
+    .sidebar {
+      position: sticky; top: 0; align-self: start;
+      height: 100vh; overflow: auto;
+      background: linear-gradient(180deg, rgba(20,184,166,.08), rgba(34,211,238,.06)), var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 28px 18px; box-shadow: var(--shadow);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #001016; font-weight: 800;
+      box-shadow: 0 6px 20px rgba(20,184,166,.35);
+    }
+    .lab-title { font-size: 1.05rem; font-weight: 800; letter-spacing: .2px; }
+    .lab-sub { font-size: .82rem; color: var(--muted); margin-top: -6px; }
+
+    /* ====== Nav ====== */
+    nav { margin-top: 16px; }
+    .nav { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+    .nav a {
+      display: block; padding: 10px 12px; border-radius: 10px; color: var(--text);
+      border: 1px solid transparent; transition: .2s ease;
+    }
+    .nav a:hover { background: rgba(20,184,166,.08); border-color: rgba(34,211,238,.25); }
+    .nav a.active { background: rgba(20,184,166,.16); border-color: rgba(34,211,238,.35); }
+
+    .sidebar .meta {
+      margin-top: 22px; font-size: .85rem; color: var(--muted);
+      border-top: 1px dashed var(--border); padding-top: 12px;
+    }
+
+    /* ==========================
+       MAIN CONTENT
+       - Hero (Home)
+       - Bölüm kutuları (.section)
+       - Kart ızgarası
+       ========================== */
+    main { padding: 36px 42px; }
+
+    /* Hero (Home bölümünün büyük başlığı) */
+    .hero {
+      background: linear-gradient(135deg, rgba(20,184,166,.14), rgba(34,211,238,.10));
+      border: 1px solid var(--border); border-radius: 18px; padding: 28px; margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .hero h1 { margin: 0 0 8px; font-size: clamp(1.6rem, 2.5vw, 2rem); }
+    .hero p { margin: 0; color: var(--muted); }
+
+    /* Bölüm kapalıyken gizlemek için */
+    .hidden { display: none !important; }
+
+    /* Standart bölüm kapları */
+    section { scroll-margin-top: 20px; }
+    .section {
+      border: 1px solid var(--border); border-radius: 16px; padding: 22px 22px;
+      background: var(--panel); box-shadow: var(--shadow); margin-bottom: 22px;
+    }
+    .section h2 { margin: 0 0 8px; font-size: 1.25rem; }
+    .section .muted { color: var(--muted); margin-top: 6px; }
+
+    /* Kart ızgarası */
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .card { border: 1px solid var(--border); background: linear-gradient(180deg, rgba(34,211,238,.06), transparent 30%), var(--panel); border-radius: 14px; padding: 16px; }
+    .card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+    .pill { display:inline-block; font-size:.75rem; border:1px solid var(--border); border-radius: 999px; padding:.2rem .6rem; color: var(--muted); }
+
+    /* ===== Collapsible subsections (details/summary) ===== */
+    details.collapsible { 
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 12px 0;
+      background: linear-gradient(180deg, rgba(34,211,238,.04), transparent 30%), var(--panel);
+    }
+    details.collapsible > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text);
+    }
+    details.collapsible > summary::-webkit-details-marker { display: none; }
+    details.collapsible > summary::after {
+      content: "▸";
+      font-size: 1rem;
+      transition: transform .2s ease;
+      opacity: .9;
+    }
+    details.collapsible[open] > summary::after { content: "▾"; }
+    details.collapsible .collapsible-content {
+      padding: 10px 14px 14px;
+      border-top: 1px dashed var(--border);
+    }
+
+    /* ==========================
+       FOOTER
+       ========================== */
+    footer { color: var(--muted); font-size: .9rem; margin-top: 28px; }
+
+    /* ==========================
+       MOBILE RESPONSIVE
+       - Hamburger buton
+       - Sidebar kaydırma
+       ========================== */
+    .toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 999; }
+    .toggle button { 
+      border: 1px solid var(--border); background: var(--panel); color: var(--text);
+      border-radius: 10px; padding: 10px 12px; box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: fixed; left: -100%; top: 0; width: 78%; max-width: 320px; transition: left .25s ease; z-index: 998; }
+      .sidebar.open { left: 0; }
+      main { padding: 72px 18px 28px; }
+      .toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ==========================
+       MOBILE MENU TOGGLE
+       ========================== -->
+  <div class="toggle"><button id="menuBtn" aria-label="Menüyü aç/kapat">☰ Menü</button></div>
+
+  <!-- ==========================
+       PAGE LAYOUT (Sidebar + Main)
+       ========================== -->
+  <div class="layout">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Marka alanı: Logo + Başlık -->
+      <div class="brand">
+        <div class="logo">CN</div>
+        <div>
+          <div class="lab-title">Computational Neuroscience Lab</div>
+          <div class="lab-sub">Izmir University of Economics</div>
+        </div>
+      </div>
+
+      <!-- Navigasyon bağlantıları -->
+      <nav>
+        <ul class="nav" id="nav">
+          <li><a href="#home" class="active">Home</a></li>
+          <li><a href="#research">Research</a></li>
+          <li><a href="#people">People</a></li>
+          <li><a href="#publications">Publications</a></li>
+          <li><a href="#teaching">Teaching</a></li>
+          <li><a href="#datasets">Datasets</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Meta bilgi -->
+      <div class="meta">
+        <div><span class="pill">turkuaz theme</span></div>
+        <div style="margin-top:8px">Last updated: <span id="lastUpdated">—</span></div>
+      </div>
+    </aside>
+
+    <!-- ===== Main Content ===== -->
+    <main>
+      <!-- Home (Hero) -->
+      <div class="hero" id="home">
+        <h1>Welcome to the Computational Neuroscience Lab</h1>
+        <p>We study brain dynamics with EEG/MEG/fMRI, build computational models, and develop machine learning methods for neural data.</p>
+      </div>
+
+      <!-- Research -->
+      <section class="section" id="research">
+        <h2>Research</h2>
+        <p class="muted">Focus areas and current projects</p>
+        <div class="grid" style="margin-top:12px">
+          <article class="card">
+            <h3>EEG-based Trust Modeling</h3>
+            <p>Unsupervised learning for trust-related affective states; approach–withdrawal indices; connectivity and graph features.</p>
+          </article>
+          <article class="card">
+            <h3>Neural Signal Processing</h3>
+            <p>Time–frequency analysis, AR models, source localization, and robust denoising for real-world recordings.</p>
+          </article>
+          <article class="card">
+            <h3>Computational Psychiatry</h3>
+            <p>Latent-state modeling for attention, stress, and decision-making under uncertainty.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- People -->
+      <section class="section" id="people">
+        <h2>People</h2>
+        <p class="muted">Principal investigator, graduate students, and collaborators.</p>
+        <ul>
+          <li><strong>Prof. Dr. Aydın Akan</strong> — Advisor & Collaborator</li>
+          <li><strong>Berkay Tunakan</strong> — Research Assistant, M.Sc. Student, Izmir University of Economics</li>
+          <li><strong>Burak Akbuğday</strong> — Ph.D. Student in Electrical and Electronics Engineering, Research Assistant, Izmir University of Economics</li>
+          <li><strong>Sude Pehlivan</strong> — Ph.D. Student in Electrical and Electronics Engineering, Research Assistant in Biomedical Engineering, Izmir University of Economics</li>
+          <li><strong>Özge Ada Bozbaş</strong> — M.Sc. Student in Electrical and Electronics Engineering, Izmir University of Economics</li>
+        </ul>
+      </section>
+
+       <section class="section" id="publications">
+        <h2>Publications</h2>
+
+        <!-- Books subsection (only this kept for now) -->
+        <h3>Books</h3>
+        <ol>
+          <li>Akan, A., and Chaparro, L.F., <em>Signals and Systems Using MATLAB</em>, 4th ed., Elsevier Academic Publishing, ISBN: 9780443157097, July 2024. <a href="https://educate.elsevier.com/book/details/9780443157097" target="_blank" rel="noopener noreferrer">Link</a></li>
+          <li>Chaparro, L.F., and Akan, A., <em>Signals and Systems Using MATLAB</em>, 3rd ed., Elsevier Academic Publishing, ISBN: 9780128142042, Jan 2019.</li>
+          <li>Ozcoban, M.A., and Akan, A., <em>Global Field Synchronization of EEG Signals: Application to the Detection of OCD</em>, LAP Lambert Academic Publishing, ISBN: 978-6139855940, June 2018.</li>
+        </ol>
+          <!-- SCI-indexed international journal articles -->
+        <h3>SCI-Indexed International Journal Articles</h3>
+        <ol>
+                    <li>Sen, S.Y., Karabiber Cura, O., Yilmaz, G.C., and Akan, A., “Classification of Alzheimer’s Dementia EEG Signals using Deep Learning,” <em>Transactions of the Institute of Measurement and Control</em>, <a href="https://doi.org/10.1177/01423312241267046" target="_blank" rel="noopener noreferrer">https://doi.org/10.1177/01423312241267046</a>, Vol. 47, No. 7, pp. 1353–1365, Apr. 2025. WOS:001290595800001</li>
+          <li>Karabiber Cura, O., Akan, A., and Kocaaslan Atli, S., “Detection of Attention Deficit Hyperactivity Disorder Based on EEG Feature Maps and Deep Feature Extraction,” <em>Biocybernetics and Biomedical Engineering</em>, <a href="https://doi.org/10.1016/j.bbe.2024.07.003" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.bbe.2024.07.003</a>, Vol. 44, No. 3, pp. 450–460, July–September 2024. WOS:001279062000001</li>
+          <li>Akbugday, B., Pehlivan Akbugday, S., Sadikzade, R., Akan, A., and Unal, S., “Detection of Olfactory Stimulus in EEG Signals Using Machine and Deep Learning Methods,” <em>Electrica</em>, <a href="https://doi.org/10.5152/electrica.2024.23111" target="_blank" rel="noopener noreferrer">https://doi.org/10.5152/electrica.2024.23111</a>, Vol. 24, No. 1, pp. 175–182, Jan. 2024. WOS:001275870300016</li>
+          <li>Karabiber Cura, O., Ture, H.S., and Akan, A., “Detection of Alzheimer’s Dementia by Using Deep Time-Frequency Feature Extraction,” <em>Electrica</em>, <a href="https://doi.org/10.5152/electrica.2023.23029" target="_blank" rel="noopener noreferrer">https://doi.org/10.5152/electrica.2023.23029</a>, Vol. 24, No. 1, pp. 109–118, Jan. 2024. WOS:001119291400001</li>
+          <li>Karabiber Cura, O., Akan, A., and Ture, H.S., “Classification of Epileptic and Psychogenic Non-epileptic Seizures by Using Time-Frequency Features of EEG Signals,” <em>International Journal of Neural Systems</em>, <a href="https://doi.org/10.1142/S0129065723500454" target="_blank" rel="noopener noreferrer">https://doi.org/10.1142/S0129065723500454</a>, Vol. 33, No. 9, Article No. 2350045, Sep. 2023. WOS:001041534300001</li>
+          <li>Karabiber Cura, O., Kocaaslan Atli, S., and Akan, A., “Attention Deficit Hyperactivity Disorder Recognition based on Intrinsic Time-Scale Decomposition of EEG Signals,” <em>Biomedical Signal Processing and Control</em>, <a href="https://doi.org/10.1016/j.bspc.2022.104512" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.bspc.2022.104512</a>, Vol. 81, No. 3, Mar. 2023. WOS:000908986800001</li>
+          <li>Degirmenci, M., Izci, E., Ozdemir, M.A., and Akan, A., “Arrhythmic Heartbeat Classification Using 2D Convolutional Neural Networks,” <em>Innovation and Research in BioMedical Engineering (IRBM)</em>, <a href="https://doi.org/10.1016/j.irbm.2021.04.002" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.irbm.2021.04.002</a>, Vol. 43, No. 5, pp. 422–433, Oct. 2022. WOS:000860611400011</li>
+          <li>Karabiber Cura, O., Akan, A., Yilmaz, G.C., and Ture, H.S., “Detection of Alzheimer’s Dementia by Using Signal Decomposition and Machine Learning Methods,” <em>International Journal of Neural Systems</em>, <a href="https://doi.org/10.1142/S0129065722500423" target="_blank" rel="noopener noreferrer">https://doi.org/10.1142/S0129065722500423</a>, Vol. 32, No. 9, pp. 1–16, Sep. 2022. WOS:000847297200006</li>
+          <li>Ozdemir, M.A., Kisa, D.H., Guren, O., and Akan, A., “Hand Gesture Classification Using Hilbert–Huang Transform and Deep Learning,” <em>Biomedical Signal Processing and Control</em>, <a href="https://doi.org/10.1016/j.bspc.2022.103787" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.bspc.2022.103787</a>, Vol. 77, No. 8, pp. 1–16, Aug. 2022. WOS:000799610000003</li>
+        
+          <li>Eryigit, S., Al Kafee, A., and Akan, A., “Analysis of the quadratus lumborum muscle activity on leg length discrepancy: A randomized controlled trial,” <em>Journal of Back and Musculoskeletal Rehabilitation</em>, <a href="https://doi.org/10.3233/BMR-181177" target="_blank" rel="noopener noreferrer">https://doi.org/10.3233/BMR-181177</a>, Vol. 35, No. 3, pp. 525–530, May 2022. WOS:000803684600008</li>
+          <li>Al Kafee, A., Cilaci, T., Kayar, Y., and Akan, A., “Electrogastrography in Patients with Functional Dyspepsia, Joint Hypermobility, and Diabetic Gastroparesis,” <em>Turkish Journal of Gastroenterology</em>, <a href="https://doi.org/10.5152/tjg.2021.20853" target="_blank" rel="noopener noreferrer">https://doi.org/10.5152/tjg.2021.20853</a>, Vol. 33, No. 3, pp. 182–189, Mar. 2022. WOS:000841787400002</li>
+          <li>Olamat, A., Ozel, P., and Akan, A., “Synchronization Analysis in Epileptic EEG Signals via State Transfer Networks based on Visibility Graph Technique,” <em>International Journal of Neural Systems</em>, <a href="https://doi.org/10.1142/S0129065721500416" target="_blank" rel="noopener noreferrer">https://doi.org/10.1142/S0129065721500416</a>, Vol. 32, No. 2, Article No. 2150041, pp. 1–16, Feb. 2022. WOS:000745070100006</li>
+          <li>Akan, A., and Karabiber Cura, O., “Time-Frequency Signal Processing: Today and Future,” <em>Digital Signal Processing</em>, <a href="https://doi.org/10.1016/j.dsp.2021.103216" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.dsp.2021.103216</a>, Vol. 119, No. 12, pp. 1–16, Dec. 2021. WOS:000729993100008</li>
+          <li>Ozel, P., Olamat, A., and Akan, A., “A Diagnostic Strategy via Multiresolution Synchrosqueezing Transform on Obsessive Compulsive Disorder,” <em>International Journal of Neural Systems</em>, <a href="https://doi.org/10.1142/S0129065721500441" target="_blank" rel="noopener noreferrer">https://doi.org/10.1142/S0129065721500441</a>, Vol. 31, No. 12, pp. 1–13, Dec. 2021. WOS:000724957400009</li>
+          <li>Eren, T., and Akan, A., “Null Subcarrier Index Modulation in OFDM Systems for 6G and Beyond,” <em>Sensors</em> (SI: Flexible Radio Access Techniques for 5G and Beyond), Vol. 21, No. 7263, <a href="https://doi.org/10.3390/s21217263" target="_blank" rel="noopener noreferrer">https://doi.org/10.3390/s21217263</a>, pp. 1–25, Nov. 2021.</li>
+          <li>Eryigit, S., Al Kafee, A., and Akan, A., “Analysis of the quadratus lumborum muscle activity on leg length discrepancy: A randomized controlled trial,” accepted for <em>Journal of Back and Musculoskeletal Rehabilitation</em>, <a href="https://doi.org/10.3233/BMR-181177" target="_blank" rel="noopener noreferrer">https://doi.org/10.3233/BMR-181177</a>, pp. 1–6, July 2021.</li>
+          <li>Degirmenci, M., Izci, E., Ozdemir, M.A., and Akan, A., “Arrhythmic Heartbeat Classification Using 2D Convolutional Neural Networks,” <em>Innovation and Research in BioMedical Engineering (IRBM)</em>, <a href="https://doi.org/10.1016/j.irbm.2021.04.002" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.irbm.2021.04.002</a>, pp. 1–12, Apr. 2021.</li>
+          <li>Ozdemir, M.A., Karabiber Cura, O., and Akan, A., “Epileptic EEG Classification by Using Time-Frequency Images for Deep Learning,” <em>International Journal of Neural Systems</em>, <a href="https://doi.org/10.1142/S012906572150026X" target="_blank" rel="noopener noreferrer">https://doi.org/10.1142/S012906572150026X</a>, Vol. 31, No. 8, pp. 1–16, Aug. 2021. WOS:000687020300002</li>
+          <li>Kutluk, S., Kayabol, K., and Akan, A., “A New CNN Training Approach with Application to Hyperspectral Image Classification,” <em>Digital Signal Processing</em>, <a href="https://doi.org/10.1016/j.dsp.2021.103016" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.dsp.2021.103016</a>, Vol. 113, No. 6, pp. 1–9, June 2021. WOS:000640937700006</li>
+          <li>Karabiber Cura, O., and Akan, A., “Classification of Epileptic EEG Signals Using Synchrosqueezing Transform and Machine Learning Techniques,” <em>International Journal of Neural Systems</em>, <a href="https://doi.org/10.1142/S0129065721500052" target="_blank" rel="noopener noreferrer">https://doi.org/10.1142/S0129065721500052</a>, Vol. 31, No. 5, pp. 1–16, May 2021. WOS:000637815000005</li>
+          <li>Ozel, P., and Akan, A., “Channel Contributions of EEG in Emotion Modelling Based on Multivariate Adaptive Orthogonal Signal Decomposition,” <em>IETE Journal of Research</em>, <a href="https://doi.org/10.1080/03772063.2021.1911693" target="_blank" rel="noopener noreferrer">https://doi.org/10.1080/03772063.2021.1911693</a>, Apr. 2021. WOS:000649257300001</li>
+          <li>Ozdemir, M.A., Degirmenci, M., Izci, E., and Akan, A., “EEG-Based Emotion Recognition with Deep Convolutional Neural Networks,” <em>Biomedical Engineering / Biomedizinische Technik (BMT)</em>, <a href="https://doi.org/10.1515/bmt-2019-0306" target="_blank" rel="noopener noreferrer">https://doi.org/10.1515/bmt-2019-0306</a>, Vol. 66, No. 1, pp. 43–57, Feb. 2021. WOS:000621777900005</li>
+          <li>Karabiber Cura, O., and Akan, A., “Analysis of Epileptic EEG Signals by Using Dynamic Mode Decomposition and Spectrum,” <em>Biocybernetics and Biomedical Engineering</em>, <a href="https://doi.org/10.1016/j.bbe.2020.11.002" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.bbe.2020.11.002</a>, Vol. 41, No. 1, pp. 28–44, Jan–Mar. 2021. WOS:000643728600005</li>
+          <li>Ozel, P., Karaca, A., Olamat, A., Akan, A., Ozcoban, M.A., and Tan, O., “Intrinsic Synchronization Analysis of Brain Activity in Obsessive Compulsive Disorders,” <em>International Journal of Neural Systems</em>, <a href="https://doi.org/10.1142/S012906572050046X" target="_blank" rel="noopener noreferrer">https://doi.org/10.1142/S012906572050046X</a>, Vol. 30, No. 09, 2050046, pp. 1–17, Sep. 2020. WOS:000571401700005</li>
+          <li>Patlar Akbulut, F., Ikitimur, B., and Akan, A., “Wearable sensor-based evaluation of psychosocial stress in patients with Metabolic Syndrome,” <em>Artificial Intelligence in Medicine</em>, <a href="https://doi.org/10.1016/j.artmed.2020.101824" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.artmed.2020.101824</a>, Vol. 104, No. 101824, Apr. 2020. WOS:000537804900017</li>
+          <li>Dogruyol Basar, M., Duru, A.D., Akan, A., “Emotional State Detection Based on Common Spatial Patterns of EEG,” <em>Signal, Image and Video Processing</em>, <a href="https://doi.org/10.1007/s11760-019-01580-8" target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/s11760-019-01580-8</a>, Vol. 14, No. 3, pp. 473–481, Apr. 2020.</li>
+          <li>Karabiber Cura, O., Kocaaslan Atli, S., Ture, S., and Akan, A., “Epileptic Seizure Classifications Using Empirical Mode Decomposition and its Derivative,” <em>BioMedical Engineering OnLine</em>, <a href="https://doi.org/10.1186/s12938-020-0754-y" target="_blank" rel="noopener noreferrer">https://doi.org/10.1186/s12938-020-0754-y</a>, Vol. 19, No. 10, pp. 1–22, Feb. 2020. WOS:000514684600001</li>
+          <li>Ege, Z.R., Akan, A., Oktar, F.N., Lin, C.C., Karademir, B., and Gunduz, O., “Indocyanine Green Based Fluorescent Polymeric Nanoprobes For in Vitro Imaging,” <em>Journal of Biomedical Materials Research Part B: Applied Biomaterials</em>, <a href="https://doi.org/10.1002/jbm.b.34410" target="_blank" rel="noopener noreferrer">https://doi.org/10.1002/jbm.b.34410</a>, Vol. 108, No. 2, pp. 538–554, Feb. 2020. WOS:000505634000022</li>
+          <li>Saatci, E., Saatci, E., and Akan, A., “Analysis of Linear Lung Models based on State-Space Models,” <em>Computer Methods and Programs in Biomedicine</em>, <a href="https://doi.org/10.1016/j.cmpb.2019.105094" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.cmpb.2019.105094</a>, Vol. 183, No. 105094, Jan. 2020. WOS:000498062700003</li>
+          <li>Denizoglu Kulli, H., Karabulut, D., Saka, T., Akan, A., and Arslan, Y.Z., “Force Irradiation Effect Of Kinesiotaping On Contralateral Muscle Activation,” <em>Human Movement Science</em>, <a href="https://doi.org/10.1016/j.humov.2019.05.011" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.humov.2019.05.011</a>, Vol. 66, pp. 310–317, Aug. 2019.</li>
+          <li>Ozel, P., Akan, A., and Yilmaz, B., “Synchrosqueezing Transform Based Feature Extraction From EEG Signals for Emotional State Prediction,” <em>Biomedical Signal Processing and Control</em>, <a href="https://doi.org/10.1016/j.bspc.2019.04.023" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.bspc.2019.04.023</a>, Vol. 52, No. 7, pp. 152–161, July 2019.</li>
+          <li>Ozturk Simsek, B., and Akan, A., “Frequency Estimation for Monophonical Turkish Maqam Music by Using Modified Variational Mode Decomposition Method,” <em>Journal of the Faculty of Engineering and Architecture of Gazi University</em>, <a href="http://dx.doi.org/10.17341/gazimmfd.416457" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.17341/gazimmfd.416457</a>, Vol. 33, No. 4, pp. 1333–1346, Dec. 2018.</li>
+          <li>Mert, A., and Akan, A., “Seizure Onset Detection Based on Frequency Domain Metric of Empirical Mode Decomposition,” <em>Signal, Image and Video Processing</em>, <a href="https://doi.org/10.1007/s11760-018-1304-y" target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/s11760-018-1304-y</a>, Vol. 12, No. 8, pp. 1489–1496, Nov. 2018. WOS:000444312400008</li>
+          <li>Akbulut, F.P., and Akan, A., “A Smart Wearable System for Short-term Cardiovascular Risk Assessment with Emotional Dynamics,” <em>Measurement</em>, <a href="https://doi.org/10.1016/j.measurement.2018.06.050" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.measurement.2018.06.050</a>, Vol. 128, pp. 237–246, Nov. 2018. WOS:000440449800025</li>
+          <li>Mert, A., and Akan, A., “Emotion Recognition Based on Time-Frequency Distribution of EEG Signals Using Multivariate Synchrosqueezing Transform,” <em>Digital Signal Processing</em>, <a href="https://doi.org/10.1016/j.dsp.2018.07.003" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.dsp.2018.07.003</a>, Vol. 81, pp. 106–115, Oct. 2018. WOS:000445307000012</li>
+          <li>Ege, Z.R., Akan, A., Oktar, F.N., Lin, C.C., Karademir, B., and Gunduz, O., “Encapsulation of Indocyanine Green (ICG) in Poly(lactic acid) (PLA) Nanofibers for Using as a Nanoprobe in Biomedical Diagnostics,” <em>Materials Letters</em>, <a href="https://doi.org/10.1016/j.matlet.2018.06.008" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.matlet.2018.06.008</a>, Vol. 228, pp. 148–151, Oct. 2018. WOS:000439045500038</li>
+          <li>Akgun, O., Akan, A., Demir, H., and Akinci, T.C., “Analysis of Gait Dynamics of ALS Disease and Classification of Artificial Neural Networks,” <em>Tehnički Vjesnik – Technical Gazette</em>, <a href="http://dx.doi.org/10.17559/TV-20160914144554" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.17559/TV-20160914144554</a>, Vol. 25, Suppl. 1, pp. 183–187, May 2018. WOS:000433290300026</li>
+          <li>Al Kafee, A., and Akan, A., “Analysis of Gastric Myoelectrical Activity from the Electrogastrogram Signals based on Wavelet Transform and Line Length Feature,” <em>Proceedings of the Institution of Mechanical Engineers, Part H: Journal of Engineering in Medicine</em>, <a href="http://dx.doi.org/10.1177/0954411918757812" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1177/0954411918757812</a>, Vol. 232, No. 4, pp. 403–411, Apr. 2018. WOS:000429916100008</li>
+          <li>Celik, Y., and Akan, A., “Subcarrier Intensity Modulation for MIMO Visible Light Communications,” <em>Optics Communications</em>, <a href="https://doi.org/10.1016/j.optcom.2017.12.002" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.optcom.2017.12.002</a>, Vol. 412, No. 4, pp. 90–101, Apr. 2018. WOS:000419020400015</li>
+          <li>Mert, A., and Akan, A., “Emotion Recognition from EEG Signals by Using Multivariate Empirical Mode Decomposition,” <em>Pattern Analysis and Applications</em>, <a href="http://dx.doi.org/10.1007/s10044-016-0567-6" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1007/s10044-016-0567-6</a>, Vol. 21, No. 1, pp. 81–89, Feb. 2018. WOS:000425293800007</li>
+          <li>Ozcoban, M.A., Tan, O., Aydin, S., and Akan, A., “Decreased global field synchronization of multichannel frontal EEG measurements in obsessive-compulsive disorders,” <em>Medical and Biological Engineering and Computing</em>, <a href="https://doi.org/10.1007/s11517-017-1689-8" target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/s11517-017-1689-8</a>, Vol. 56, No. 2, pp. 331–338, Feb. 2018. WOS:000423726400013</li>
+          <li>Kalkandelen, C., Suleymanoglu, M., Kuruca, S.E., Akan, A., Oktar, F.N., and Gunduz, O., “Part 2: Biocompatibility Evaluation of Hydroxyapatite Based Clinoptilolite and Al<sub>2</sub>O<sub>3</sub> Composites,” <em>Journal of the Australian Ceramic Society</em>, <a href="https://link.springer.com/article/10.1007%2Fs41779-017-0027-9" target="_blank" rel="noopener noreferrer">https://link.springer.com/article/10.1007%2Fs41779-017-0027-9</a>, Vol. 53, No. 1, pp. 217–223, Apr. 2017.</li>
+          <li>Kalkandelen, C., Gunduz, O., Akan, A., and Oktar, F.N., “Part 1: Clinoptilolite–Alumina–Hydroxyapatite Composites for Biomedical Engineering,” <em>Journal of the Australian Ceramic Society</em>, <a href="http://link.springer.com/article/10.1007/s41779-016-0013-7" target="_blank" rel="noopener noreferrer">http://link.springer.com/article/10.1007/s41779-016-0013-7</a>, Vol. 53, No. 1, pp. 91–99, Apr. 2017.</li>
+          <li>Kartlak, H., Odabasioglu, N., and Akan, A., “Cooperation Methods for Cognitive Radio Systems,” <em>Wireless Personal Communications</em>, <a href="https://doi.org/10.1007/s11277-016-3773-z" target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/s11277-016-3773-z</a>, pp. 1–16, Sep. 2016.</li>
+          <li>Onder, M., Akan, A., and Dogan, H., “Advanced Neural Network Receiver Design to Combat Multiple Channel Impairments,” <em>Turkish Journal of Electrical Engineering &amp; Computer Sciences</em>, <a href="http://dx.doi.org/10.3906/elk-1405-196" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.3906/elk-1405-196</a>, Vol. 24, pp. 3066–3077, Apr. 2016.</li>
+          <li>Ertas, M., Yildirim, I., Kamasak, M.E., and Akan, A., “Iterative Image Reconstruction Using Non-Local Means with Total Variation from Insufficient Projection Data,” <em>Journal of X-ray Science and Technology</em>, <a href="http://dx.doi.org/10.3233/XST-160529" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.3233/XST-160529</a>, Vol. 24, No. 1, pp. 1–8, Mar. 2016.</li>
+          <li>Gurkan, K., and Akan, A., “Simulation and Measurement of Air-Coupled Semi-Circular and Conical PVDF Sensors,” <em>IEEE Sensors Journal</em>, <a href="http://dx.doi.org/10.1109/JSEN.2015.2490260" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1109/JSEN.2015.2490260</a>, Vol. 16, No. 4, pp. 983–988, Feb. 2016.</li>
+          <li>Mert, A., Kilic, N., Bilgili, E., and Akan, A., “Breast Cancer Detection with Reduced Feature Set,” <em>Computational and Mathematical Methods in Medicine</em>, <a href="http://www.hindawi.com/journals/cmmm/aa/265138/" target="_blank" rel="noopener noreferrer">http://www.hindawi.com/journals/cmmm/aa/265138/</a>, Article ID 265138, 11 pages, Jan. 2015.</li>
+          <li>Mert, A., and Akan, A., “Detrended Fluctuation Thresholding For Empirical Mode Decomposition Based Denoising,” <em>Digital Signal Processing</em>, <a href="http://dx.doi.org/10.1016/j.dsp.2014.06.006" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1016/j.dsp.2014.06.006</a>, Vol. 32, pp. 48–56, Sep. 2014.</li>
+          <li>Ertas, M., Yildirim, I., Kamasak, M., and Akan, A., “An Iterative Tomosynthesis Reconstruction Using Total Variation Combined with Non-local Means Filtering,” <em>BioMedical Engineering OnLine</em>, <a href="http://dx.doi.org/10.1186/1475-925X-13-65" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1186/1475-925X-13-65</a>, Vol. 13, No. 65, May 2014.</li>
+          <li>Alkishriwo, O.A., Akan, A., and Chaparro, L.F., “Intrinsic Mode Chirp Decomposition of Non-stationary Signals,” <em>IET Signal Processing</em>, <a href="http://dx.doi.org/10.1049/iet-spr.2013.0396" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1049/iet-spr.2013.0396</a>, Vol. 8, No. 3, pp. 267–276, May 2014.</li>
+          <li>Patlar-Akbulut, F., Akkur, E., and Akan, A., “A Decision Support System to Determine Optimal Ventilator Settings,” <em>BMC Medical Informatics and Decision Making</em>, <a href="http://dx.doi.org/10.1186/1472-6947-14-3" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1186/1472-6947-14-3</a>, Vol. 14, No. 3, Jan. 2014.</li>
+          <li>Gurkan, G., Akan, A., and Seyhan, T., “Analysis of Brain Connectivity Changes After Propofol Injection by Generalized Partial Directed Coherence,” <em>Digital Signal Processing</em>, <a href="http://dx.doi.org/10.1016/j.dsp.2013.11.011" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1016/j.dsp.2013.11.011</a>, Vol. 25, pp. 156–163, Feb. 2014.</li>
+          <li>Mert, A., Kilic, N., and Akan, A., “Evaluation of Bagging Ensemble Method with Time-Domain Feature Extraction for Diagnosing of Arrhythmia Beats,” <em>Neural Computing and Applications</em>, <a href="http://dx.doi.org/10.1007/s00521-012-1232-7" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1007/s00521-012-1232-7</a>, Vol. 24, No. 2, pp. 317–326, Feb. 2014.</li>
+          <li>Ertas, M., Yildirim, I., Kamasak, M., and Akan, A., “Digital Breast Tomosynthesis Image Reconstruction Using 2D and 3D Total Variation Minimization,” <em>BioMedical Engineering OnLine</em>, <a href="http://dx.doi.org/10.1186/1475-925X-12-112" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1186/1475-925X-12-112</a>, Vol. 12, No. 112, Dec. 2013.</li>
+          <li>Chaparro, L.F., Sejdic, E., Can, A., Alkishriwo, O.A., Senay, S., and Akan, A., “Asynchronous Representation and Processing of Nonstationary Signals,” <em>IEEE Signal Processing Magazine</em>, Nov. 2013.</li>
+          <li>Tartar, A., Kilic, N., and Akan, A., “Classification of Pulmonary Nodules by Using Hybrid Features,” <em>Computational and Mathematical Methods in Medicine</em>, Vol. 2013, Article ID 148363, 11 pages, <a href="http://dx.doi.org/10.1155/2013/148363" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1155/2013/148363</a>, June 2013.</li>
+          <li>Aldirmaz, S., Durak-Ata, L., Akan, A., and Chaparro, L.F., “Signal-Adaptive Discrete Evolutionary Transform as a Sparse Time–Frequency Representation,” <em>Digital Signal Processing</em>, Vol. 2013, No. 1, pp. 1–10, <a href="http://dx.doi.org/10.1016/j.dsp.2013.05.010" target="_blank" rel="noopener noreferrer">http://dx.doi.org/10.1016/j.dsp.2013.05.010</a>, May 2013.</li>
+          <li>Yalcin, M., Akan, A., and Dogan, H., “Low-Complexity Channel Estimation for OFDM Systems in High-Mobility Fading Channels,” <em>Turkish Journal of Electrical Engineering &amp; Computer Sciences</em>, Vol. 20, No. 4, pp. 583–592, DOI:10.3906/elk-1101-1060, Apr. 2012.</li>
+          <li>Sezdi, M., Sari, P., and Akan, A., “Development and Implementation of Calibration Measurement Methods for Physical Therapy Devices,” <em>Turkish Journal of Physical Medicine and Rehabilitation</em>, Vol. 58, No. 1, pp. 47–51, DOI:10.4274/tftr.38268, Mar. 2012.</li>
+          <li>Saatci, E., and Akan, A., “Posterior Cramér–Rao Lower Bounds For Dual Kalman Estimation,” <em>Digital Signal Processing</em>, Vol. 22, No. 1, pp. 47–53, Jan. 2012.</li>
+          <li>Senay, S., Chaparro, L.F., Sun, M., Sclabassi, R., and Akan, A., “Asynchronous signal processing for brain–computer interfaces,” <em>Turkish Journal of Electrical Engineering &amp; Computer Sciences</em>, Vol. 19, No. 2, pp. 275–289, DOI:10.3906/elk-1001-382, 2011.</li>
+          <li>Saatci, E., and Akan, A., “Inverse Modeling of Respiratory System during Noninvasive Ventilation by Maximum Likelihood Estimation,” <em>EURASIP Journal on Advances in Signal Processing</em>, Volume 2010, Article ID 237562, 12 pages, DOI:10.1155/2010/237562, 2010.</li>
+          <li>Onen, E., Akan, A., and Odabasioglu, N., “Time-Frequency Based Channel Estimation for High-Mobility OFDM Systems—Part II: Cooperative Relaying Case,” <em>EURASIP Journal on Advances in Signal Processing</em>, Volume 2010, Article ID 973286, 7 pages, DOI:10.1155/2010/973286, 2010.</li>
+          <li>Onen, E., Akan, A., and Chaparro, L.F., “Time-Frequency Based Channel Estimation for High-Mobility OFDM Systems—Part I: MIMO Case,” <em>EURASIP Journal on Advances in Signal Processing</em>, Volume 2010, Article ID 549197, 8 pages, DOI:10.1155/2010/549197, 2010.</li>
+          <li>Ozturk, M., Akan, A., and Cekic, Y., “A Robust Image Watermarking in the Joint Time–Frequency Domain,” <em>EURASIP Journal on Advances in Signal Processing</em>, Volume 2010, Article ID 509757, 9 pages, DOI:10.1155/2010/509757, 2010.</li>
+          <li>Arslan, Y.Z., Adli, M.A., Akan, A., and Baslo, M.B., “Prediction of Externally Applied Forces to Human Hands Using Frequency Content of Surface EMG Signals,” <em>Computer Methods and Programs in Biomedicine</em>, Vol. 98, No. 1, pp. 36–44, Apr. 2010.</li>
+          <li>Saatci, E., and Akan, A., “Respiratory Parameter Estimation in Non-invasive Ventilation based on Generalized Gaussian Noise Models,” <em>Signal Processing</em>, Vol. 90, No. 2, pp. 480–489, Feb. 2010.</li>
+          <li>Ozturk, M., and Akan, A., “Local Instantaneous Frequency Estimation of Multi-component Signals,” <em>Computers and Electrical Engineering</em>, Vol. 34, No. 4, pp. 281–289, July 2008.</li>
+          <li>Akan, A., and Onen, E., “A Discrete Fractional Gabor Expansion for Multi-component Signals,” <em>AEÜ – International Journal of Electronics and Communications</em>, Vol. 61, No. 5, pp. 279–285, May 2007.</li>
+          <li>Akan, A., Ergin, A., Yildirim, M., and Oztas, E., “Analysis of Temporomandibular Joint Sounds in Orthodontic Patients,” <em>Computers and Electrical Engineering</em>, Vol. 32, No. 4, pp. 312–321, July–Aug. 2006.</li>
+          <li>Akan, A., and Chaparro, L.F., “Modeling and Estimation of Wireless OFDM Channels by Using Time–Frequency Analysis,” <em>Circuits, Systems and Signal Processing</em>, Vol. 25, No. 3, pp. 389–403, May–June 2006.</li>
+          <li>Senay, S., Akan, A., and Chaparro, L.F., “Time–Frequency Channel Modeling and Estimation of Multi-Carrier Spread Spectrum Communication Systems,” <em>Journal of the Franklin Institute</em>, Vol. 342, No. 7, pp. 776–792, Nov. 2005.</li>
+          <li>Akan, A., “Signal-Adaptive Evolutionary Spectral Analysis Using Instantaneous Frequency Estimation,” <em>FREQUENZ – Journal of RF-Engineering and Telecommunications</em>, Vol. 59, No. 7–8, pp. 201–205, July–Aug. 2005.</li>
+          <li>Akan, A., and Cekic, Y., “A Fractional Gabor Expansion,” <em>Journal of The Franklin Institute</em>, Vol. 340, No. 5, pp. 391–397, Nov. 2003.</li>
+          
+        </ol>
+      </section>
+      </section>
+      
+
+
+      <!-- Teaching -->
+      <section class="section" id="teaching">
+        <h2>Teaching</h2>
+        <p class="muted">Courses, labs, and materials</p>
+        <div class="grid" style="margin-top:12px">
+          <article class="card">
+            <h3>Digital Circuits (Verilog)</h3>
+            <p>Project ideas: keypad lock with AND/OR logic only, FSM design, and timing analysis.</p>
+          </article>
+          <article class="card">
+            <h3>Signals &amp; Systems (EEE 309)</h3>
+            <p>Continuous/discrete-time signals; LTI system properties (linearity, time-invariance, causality, stability); convolution; impulse &amp; step responses; Fourier series &amp; transform; sampling &amp; DTFT; Laplace &amp; Z-transforms; MATLAB/Simulink labs.</p>
+            <p><a href="https://eee.ieu.edu.tr/tr/syllabus/type/read/id/EEE+309" target="_blank" rel="noopener noreferrer">Syllabus (EEE 309)</a></p>
+          </article>
+          
+          <article class="card">
+            <h3>Adaptive Signal Processing (EEE 506)</h3>
+            <p>Optimal mean-square estimation; Wiener filters; adaptive structures &amp; least-squares; state-space models and Kalman filters; search techniques (gradient &amp; Newton); LMS &amp; RLS algorithms; analysis of adaptive algorithms (learning curve, convergence, stability, excess MSE, misadjustment); applications to noise cancellation &amp; system identification.</p>
+            <p><a href="https://lisansustu.ieu.edu.tr/ee/tr/syllabus/type/read/id/EEE+506" target="_blank" rel="noopener noreferrer">Syllabus (EEE 506)</a></p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Datasets -->
+      <section class="section" id="datasets">
+        <h2>Datasets</h2>
+        <p class="muted">Open resources and benchmarks</p>
+        <ul>
+          <li><strong>EEG Trust Dataset (coming soon)</strong> — anonymized trials, event markers, and band-power features.</li>
+          <li>Links to public datasets (e.g., DEAP, SEED, HCI-tagging) can be listed here.</li>
+        </ul>
+      </section>
+
+      <!-- Contact -->
+      <section class="section" id="contact">
+        <h2>Contact</h2>
+        <p>E-mail: <a href="mailto:your.name@ieu.edu.tr">your.name@ieu.edu.tr</a></p>
+        <p>Address: Izmir University of Economics, Faculty of Engineering</p>
+        <p>GitHub: <a href="https://github.com/" target="_blank" rel="noreferrer noopener">github.com/your-handle</a></p>
+      </section>
+
+      <!-- Footer -->
+      <footer>
+        © <span id="year"></span> Computational Neuroscience Lab. All rights reserved.
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==========================
+       SCRIPTS
+       - Menü aç/kapa (mobil)
+       - Sekme geçişi (tek-bölüm gösterim)
+       - Hash senkronizasyonu
+       ========================== -->
+  <script>
+    // === Mobile sidebar toggle ===
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    menuBtn?.addEventListener('click', function () {
+      sidebar.classList.toggle('open');
+    });
+
+    // === Bölümler (hero + diğer .section'lar) ===
+    const hero = document.getElementById('home');
+    const sectionNodes = Array.from(document.querySelectorAll('main > .section'));
+    const allViews = [hero, ...sectionNodes];
+
+    // Belirli bir bölümü göster, diğerlerini gizle
+    function showSection(id) {
+      allViews.forEach(function (sec) {
+        if (!sec) return;
+        const shouldShow = (id === 'home' && sec === hero) || (sec.id === id);
+        sec.classList.toggle('hidden', !shouldShow);
+      });
+
+      // Menüde aktif linki güncelle
+      document.querySelectorAll('.nav a').forEach(function (link) {
+        const target = link.getAttribute('href') || '';
+        link.classList.toggle('active', target === ('#' + id));
+      });
+
+      // URL hash'ini güncelle (scroll yapmadan)
+      if (id) history.replaceState(null, '', '#' + id);
+
+      // Mobilde menüyü kapat
+      if (window.matchMedia('(max-width: 980px)').matches) sidebar.classList.remove('open');
+    }
+
+    // === Sidebar tıklamalarını yakala ===
+    document.querySelectorAll('.nav a').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        const href = a.getAttribute('href') || '';
+        if (href.startsWith('#')) {
+          e.preventDefault();
+          showSection(href.slice(1));
+        }
+      });
+    });
+
+    // === İlk açılışta hangi bölüm görünsün? ===
+    const initial = location.hash ? location.hash.substring(1) : 'home';
+    showSection(initial);
+
+    // === Footer: yıl ve güncelleme tarihi ===
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+  </script>
+</body>
+</html>
